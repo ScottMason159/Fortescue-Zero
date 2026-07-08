@@ -1,0 +1,2027 @@
+<!doctype html>
+
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Major Hazard Control Flow</title>
+  <meta name="description" content="A practical guide for manufacturing teams learning how major hazards are identified, controlled, verified, actioned and assured.">
+  <style>
+    :root {
+      --fm-navy: #001D44;
+      --fm-white: #FFFFFF;
+      --fm-black: #000000;
+      --fm-light-grey: #E7E6E6;
+      --fm-mid-grey: #969696;
+      --fm-steel-grey: #B6BBC1;
+      --fm-blue: #0F59D3;
+      --fm-cyan: #00CDE1;
+      --fm-green: #0CB949;
+      --fm-bright-green: #00FF00;
+      --fm-orange: #D86018;
+
+  --page-bg: #FFFFFF;
+  --panel-bg: #F7F8FA;
+  --border: rgba(0, 29, 68, 0.16);
+  --border-strong: rgba(0, 29, 68, 0.28);
+  --text-muted: #40536F;
+  --focus: #0F59D3;
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 14px 34px rgba(0, 29, 68, 0.08);
+  --max-width: 1200px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 96px;
+}
+
+body {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--fm-navy);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  top: -48px;
+  left: 16px;
+  z-index: 999;
+  background: var(--fm-navy);
+  color: var(--fm-white);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+}
+
+.header-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  min-height: 72px;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: max-content;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  border: 9px solid var(--fm-bright-green);
+  border-radius: 999px;
+  display: inline-block;
+  background: transparent;
+  flex: 0 0 auto;
+}
+
+.brand span:last-child {
+  font-size: 20px;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.site-nav a {
+  padding: 8px 0;
+}
+
+.nav-toggle {
+  display: none;
+  border: 1px solid var(--border-strong);
+  background: var(--fm-white);
+  color: var(--fm-navy);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-weight: 700;
+}
+
+.page-shell {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.hero {
+  min-height: 72vh;
+  display: grid;
+  align-items: end;
+  padding: 96px 0 56px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 18px;
+  color: var(--fm-green);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 4px;
+  background: var(--fm-green);
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.hero-title {
+  max-width: 930px;
+  margin: 0;
+  font-size: clamp(44px, 6vw, 84px);
+  line-height: 0.95;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--fm-navy);
+}
+
+.hero-subtitle {
+  max-width: 760px;
+  margin: 24px 0 0;
+  font-size: clamp(19px, 2.2vw, 26px);
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.hero-statement {
+  margin: 28px 0 0;
+  padding: 20px 24px;
+  max-width: 980px;
+  border-left: 6px solid var(--fm-green);
+  background: var(--panel-bg);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.button-primary,
+.button-secondary,
+.small-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease;
+}
+
+.button-primary {
+  background: var(--fm-navy);
+  color: var(--fm-white);
+  padding: 14px 22px;
+}
+
+.button-secondary {
+  background: var(--fm-white);
+  color: var(--fm-navy);
+  border-color: var(--fm-navy);
+  padding: 13px 21px;
+}
+
+.small-button {
+  min-height: 40px;
+  background: var(--fm-white);
+  color: var(--fm-navy);
+  border-color: var(--border-strong);
+  padding: 10px 15px;
+  font-size: 14px;
+}
+
+.button-primary:hover,
+.button-secondary:hover,
+.small-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+}
+
+.section {
+  padding: 72px 0;
+  border-top: 1px solid var(--border);
+}
+
+.section-header {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.6fr);
+  gap: 32px;
+  align-items: end;
+  margin-bottom: 32px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: clamp(30px, 4vw, 52px);
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.section-intro {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 18px;
+}
+
+.values-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.value-pill {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--fm-white);
+}
+
+.overview-panel {
+  background: var(--fm-navy);
+  color: var(--fm-white);
+  border-radius: var(--radius-lg);
+  padding: clamp(28px, 5vw, 56px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+  overflow: hidden;
+  position: relative;
+}
+
+.overview-panel::after {
+  content: "";
+  position: absolute;
+  right: -120px;
+  top: -120px;
+  width: 360px;
+  height: 360px;
+  border: 48px solid rgba(0, 255, 0, 0.18);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.overview-panel h3 {
+  margin: 0 0 14px;
+  font-size: clamp(26px, 3vw, 40px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.overview-panel p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 18px;
+}
+
+.overview-list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.overview-list li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.list-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--fm-green);
+  color: var(--fm-white);
+  font-weight: 700;
+}
+
+.stepper-wrap {
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+.stepper {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(160px, 1fr));
+  gap: 10px;
+  min-width: 1160px;
+}
+
+.step-card {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--fm-white);
+  min-height: 150px;
+  padding: 16px;
+  text-align: left;
+  color: var(--fm-navy);
+}
+
+.step-card[aria-expanded="true"] {
+  border-color: var(--fm-green);
+  box-shadow: inset 0 4px 0 var(--fm-green), var(--shadow);
+}
+
+.step-index {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--fm-navy);
+  color: var(--fm-white);
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.step-title {
+  display: block;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.step-detail {
+  margin-top: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  background: var(--panel-bg);
+  min-height: 250px;
+}
+
+.step-detail h3 {
+  margin: 0 0 18px;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.detail-box {
+  background: var(--fm-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.detail-box h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.detail-box p {
+  margin: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.search-field {
+  flex: 1 1 320px;
+  max-width: 520px;
+  position: relative;
+}
+
+.search-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.search-field input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 10px 18px;
+  color: var(--fm-navy);
+  background: var(--fm-white);
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+details.card,
+details.role-lane,
+details.scenario-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--fm-white);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+details.card[open],
+details.role-lane[open],
+details.scenario-card[open] {
+  box-shadow: var(--shadow);
+  border-color: rgba(12, 185, 73, 0.5);
+}
+
+summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+.card summary,
+.role-lane summary,
+.scenario-card summary {
+  padding: 24px 28px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+  align-items: center;
+}
+
+.card summary::after,
+.role-lane summary::after,
+.scenario-card summary::after {
+  content: "+";
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--panel-bg);
+  color: var(--fm-navy);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.card[open] summary::after,
+.role-lane[open] summary::after,
+.scenario-card[open] summary::after {
+  content: "−";
+  background: var(--fm-green);
+  color: var(--fm-white);
+}
+
+.card-title {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 22px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.card-icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(12, 185, 73, 0.12);
+  color: var(--fm-navy);
+  flex: 0 0 auto;
+}
+
+.card-body,
+.scenario-body {
+  padding: 0 28px 28px;
+  color: var(--fm-navy);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.info-item {
+  border-top: 4px solid var(--fm-green);
+  background: var(--panel-bg);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.info-item h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.info-item p {
+  margin: 0;
+}
+
+.flow-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--panel-bg);
+  padding: 24px;
+  overflow-x: auto;
+}
+
+.mermaid {
+  min-width: 920px;
+  background: var(--fm-white);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.flow-fallback {
+  margin-top: 18px;
+  white-space: pre-wrap;
+  background: var(--fm-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  color: var(--fm-navy);
+  font-size: 14px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.lane-list {
+  display: grid;
+  gap: 14px;
+}
+
+.role-lane summary {
+  background: var(--panel-bg);
+}
+
+.role-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.lane-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  padding: 0 28px 28px;
+}
+
+.lane-cell {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--fm-white);
+}
+
+.lane-cell h4 {
+  margin: 0 0 8px;
+  color: var(--text-muted);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.lane-cell p {
+  margin: 0;
+}
+
+.table-wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  background: var(--fm-white);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+th,
+td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: var(--fm-navy);
+  color: var(--fm-white);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr:nth-child(even) {
+  background: var(--panel-bg);
+}
+
+.priority {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 700;
+  font-size: 13px;
+  background: rgba(12, 185, 73, 0.12);
+  color: var(--fm-navy);
+  white-space: nowrap;
+}
+
+.priority.high {
+  background: rgba(216, 96, 24, 0.14);
+}
+
+.priority.medium {
+  background: rgba(15, 89, 211, 0.12);
+}
+
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.scenario-card {
+  display: block;
+}
+
+.scenario-card summary {
+  align-items: start;
+}
+
+.scenario-title {
+  font-size: 22px;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.question {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.answer-options {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.answer-option {
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--fm-white);
+  color: var(--fm-navy);
+  padding: 12px;
+}
+
+.answer-option:hover {
+  border-color: var(--fm-green);
+}
+
+.answer-feedback {
+  display: none;
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: rgba(12, 185, 73, 0.12);
+  border: 1px solid rgba(12, 185, 73, 0.42);
+}
+
+.answer-feedback.show {
+  display: block;
+}
+
+.answer-feedback.incorrect {
+  background: rgba(216, 96, 24, 0.12);
+  border-color: rgba(216, 96, 24, 0.42);
+}
+
+.summary-card {
+  background: var(--fm-navy);
+  color: var(--fm-white);
+  border-radius: var(--radius-lg);
+  padding: clamp(28px, 5vw, 56px);
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 32px;
+  align-items: start;
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-card::before {
+  content: "";
+  position: absolute;
+  left: -80px;
+  bottom: -90px;
+  width: 240px;
+  height: 240px;
+  border: 34px solid rgba(0, 255, 0, 0.2);
+  border-radius: 999px;
+}
+
+.summary-card h2 {
+  position: relative;
+  margin: 0;
+  font-size: clamp(30px, 4vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.summary-card p {
+  position: relative;
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 18px;
+}
+
+.summary-card p:last-child {
+  margin-bottom: 0;
+}
+
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 0 48px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.footer-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.back-to-top.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.no-results {
+  display: none;
+  padding: 24px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--panel-bg);
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.no-results.show {
+  display: block;
+}
+
+@media (max-width: 1020px) {
+  .site-nav {
+    position: absolute;
+    inset: 72px 16px auto 16px;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--fm-white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow);
+    padding: 10px;
+  }
+
+  .site-nav.open {
+    display: flex;
+  }
+
+  .site-nav a {
+    padding: 12px;
+    border-radius: var(--radius-sm);
+  }
+
+  .site-nav a:hover {
+    background: var(--panel-bg);
+    text-decoration: none;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .section-header,
+  .overview-panel,
+  .summary-card {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-grid,
+  .lane-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .scenario-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .header-inner {
+    padding-inline: 16px;
+  }
+
+  .brand span:last-child {
+    font-size: 18px;
+  }
+
+  .page-shell {
+    padding: 0 16px;
+  }
+
+  .hero {
+    min-height: 60vh;
+    padding: 64px 0 44px;
+  }
+
+  .section {
+    padding: 52px 0;
+  }
+
+  .stepper-wrap {
+    overflow: visible;
+  }
+
+  .stepper {
+    min-width: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .step-card {
+    min-height: auto;
+  }
+
+  .detail-grid,
+  .info-grid,
+  .lane-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card summary,
+  .role-lane summary,
+  .scenario-card summary {
+    padding: 20px;
+  }
+
+  .card-body,
+  .scenario-body {
+    padding: 0 20px 20px;
+  }
+
+  .lane-grid {
+    padding: 0 20px 20px;
+  }
+
+  .hero-actions,
+  .toolbar,
+  .button-group {
+    align-items: stretch;
+  }
+
+  .button-primary,
+  .button-secondary,
+  .small-button {
+    width: 100%;
+  }
+
+  .mermaid {
+    min-width: 760px;
+  }
+}
+
+@media print {
+  .site-header,
+  .hero-actions,
+  .toolbar,
+  .back-to-top,
+  .nav-toggle,
+  .site-nav {
+    display: none !important;
+  }
+
+  html {
+    scroll-padding-top: 0;
+  }
+
+  body {
+    color: #000;
+    background: #fff;
+  }
+
+  .hero {
+    min-height: 0;
+    padding: 24px 0;
+  }
+
+  .section {
+    padding: 24px 0;
+    break-inside: avoid;
+  }
+
+  details.card,
+  details.role-lane,
+  details.scenario-card {
+    break-inside: avoid;
+  }
+
+  details.card:not([open]) .card-body,
+  details.role-lane:not([open]) .lane-grid,
+  details.scenario-card:not([open]) .scenario-body {
+    display: block;
+  }
+
+  .summary-card,
+  .overview-panel {
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+  }
+
+  .summary-card p,
+  .overview-panel p {
+    color: #000;
+  }
+
+  .mermaid {
+    min-width: 0;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header class="site-header" id="top">
+    <div class="header-inner">
+      <a class="brand" href="#top" aria-label="Major Hazard Control Flow home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Fortescue Zero</span>
+      </a>
+
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
+    Menu
+  </button>
+
+  <nav class="site-nav" id="site-navigation" aria-label="Primary navigation">
+    <a href="#journey">Journey</a>
+    <a href="#cards">Stages</a>
+    <a href="#flowchart">Flowchart</a>
+    <a href="#roles">Roles</a>
+    <a href="#scenarios">Scenarios</a>
+    <a href="#gaps">Gaps</a>
+    <a href="#summary">Summary</a>
+  </nav>
+</div>
+
+  </header>
+
+  <main id="main">
+    <div class="page-shell">
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Major hazard learning tool</p>
+          <h1 class="hero-title" id="page-title">Major Hazard Control Flow</h1>
+          <p class="hero-subtitle">
+            A practical guide for manufacturing teams learning how major hazards are identified, controlled, verified, actioned and assured.
+          </p>
+          <p class="hero-statement">
+            Start with the hazard. Confirm the risk. Own the controls. Verify they work. Fix what fails. Review and improve.
+          </p>
+          <div class="hero-actions">
+            <a class="button-primary" href="#journey">Start learning</a>
+            <a class="button-secondary" href="#summary">Read executive summary</a>
+          </div>
+        </div>
+      </section>
+
+  <section class="section" aria-labelledby="overview-title">
+    <div class="overview-panel">
+      <div>
+        <p class="eyebrow">Simple overview</p>
+        <h2 id="overview-title">The process is a control health cycle.</h2>
+        <p>
+          The aim is not to create more paperwork. The aim is to make sure fatality-potential risks have clear controls, clear owners and clear evidence that the controls work.
+        </p>
+      </div>
+      <ol class="overview-list" aria-label="Process overview">
+        <li>
+          <span class="list-number">1</span>
+          <span>Find hazards that could credibly cause fatal harm.</span>
+        </li>
+        <li>
+          <span class="list-number">2</span>
+          <span>Define the material risk and the controls that matter most.</span>
+        </li>
+        <li>
+          <span class="list-number">3</span>
+          <span>Verify critical controls against a clear standard.</span>
+        </li>
+        <li>
+          <span class="list-number">4</span>
+          <span>Fix failed controls, review trends and improve the system.</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="journey" aria-labelledby="journey-title">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">High-level visual journey</p>
+        <h2 class="section-title" id="journey-title">Click each step to learn what happens.</h2>
+      </div>
+      <p class="section-intro">
+        This view starts simple. Select a step to expand the detail below.
+      </p>
+    </div>
+
+    <div class="stepper-wrap" aria-label="Major hazard journey steps">
+      <div class="stepper" id="stepper"></div>
+    </div>
+
+    <article class="step-detail" id="step-detail" aria-live="polite">
+      <h3 id="step-detail-title">Identify fatality-potential hazards</h3>
+      <div class="detail-grid">
+        <div class="detail-box">
+          <h4>What happens</h4>
+          <p id="step-what"></p>
+        </div>
+        <div class="detail-box">
+          <h4>Why it matters</h4>
+          <p id="step-why"></p>
+        </div>
+        <div class="detail-box">
+          <h4>Who owns it</h4>
+          <p id="step-owner"></p>
+        </div>
+        <div class="detail-box">
+          <h4>Evidence needed</h4>
+          <p id="step-evidence"></p>
+        </div>
+        <div class="detail-box">
+          <h4>What happens next</h4>
+          <p id="step-next"></p>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="section" id="cards" aria-labelledby="cards-title">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">Interactive process cards</p>
+        <h2 class="section-title" id="cards-title">Expand the stage you need.</h2>
+      </div>
+      <p class="section-intro">
+        Search by stage, role, evidence, CCV, action or review.
+      </p>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-field">
+        <label for="card-search">Filter process cards</label>
+        <input id="card-search" type="search" placeholder="Example: CCV, owner, action, performance standard" autocomplete="off">
+      </div>
+      <div class="button-group" aria-label="Card controls">
+        <button class="small-button" type="button" id="expand-all">Expand all</button>
+        <button class="small-button" type="button" id="collapse-all">Collapse all</button>
+      </div>
+    </div>
+
+    <p class="no-results" id="no-results">No matching cards. Try another search term.</p>
+
+    <div class="card-grid" id="process-card-grid"></div>
+  </section>
+
+  <section class="section" id="flowchart" aria-labelledby="flowchart-title">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">Flowchart</p>
+        <h2 class="section-title" id="flowchart-title">Follow the decision path.</h2>
+      </div>
+      <p class="section-intro">
+        This flow shows the end-to-end route from new work or change through to assurance and repeat review.
+      </p>
+    </div>
+
+    <div class="flow-panel">
+      <pre class="mermaid" id="mermaid-chart" aria-label="Major hazard process flowchart">
+
+flowchart TD
+A[Start: new work, operation, project or change] --> B[Define scope, location, activity and assets]
+B --> C[Identify hazards and fatality risks]
+C --> D{Health and Safety MPC 4 or higher?}
+D -- No --> E[Manage through standard risk process]
+D -- Yes --> F[Confirm major hazard]
+F --> G[Record material risk if criteria met]
+G --> H[Define risk event, causes and consequences]
+H --> I[Assess MPC, residual risk and target risk]
+I --> J[Appoint Risk Owner]
+J --> K[Identify preventive and mitigating controls]
+K --> L{Is control critical?}
+L -- No --> M[Manage as normal control or treatment action]
+L -- Yes --> N[Assign Control Owner]
+N --> O[Document performance standard]
+O --> P[Define design, operating and testing requirements]
+P --> Q[Create CCV questions, frequency and assigned role]
+Q --> R[Schedule and complete CCV]
+R --> S{CCV passed?}
+S -- Yes --> T[Record evidence and continue monitoring]
+S -- No --> U[Raise remediation action]
+U --> V[Assign action owner, due date and evidence requirement]
+V --> W{Risk controlled while action open?}
+W -- No --> X[Escalate to Risk Owner and leadership]
+W -- Yes --> Y[Track action to close-out]
+X --> Z{Change to control or process required?}
+Z -- Yes --> AA[Start Management of Change]
+Z -- No --> Y
+AA --> AB[Change approval, implementation and evidence]
+AB --> AC[Post-change review if required]
+Y --> AD{Action evidence accepted?}
+AD -- No --> V
+AD -- Yes --> AE[Close action]
+T --> AF[Annual Control Effectiveness Test]
+AE --> AF
+AF --> AG{Control adequate?}
+AG -- No --> U
+AG -- Yes --> AH[Annual Material Risk Review]
+AH --> AI{Risk at target and controls effective?}
+AI -- No --> K
+AI -- Yes --> AJ[Assurance review and reporting]
+AJ --> AK[Update risk profile, controls and CCVs]
+AK --> Q
+E --> AL[End or repeat on change]
+AK --> AM[Repeat assurance cycle] </pre>
+
+      <pre class="flow-fallback" id="flow-fallback" aria-label="Plain text flowchart fallback">
+
+Plain text fallback:
+Start with new work, operation, project or change.
+Define the scope, location, activity and assets.
+Identify hazards and fatality risks.
+Check whether Health and Safety MPC is Level 4 or higher.
+If no, manage through the standard risk process.
+If yes, confirm the major hazard and record the material risk if criteria are met.
+Define the risk event, causes, consequences and ratings.
+Appoint the Risk Owner.
+Identify controls and decide which controls are critical.
+Assign Control Owners for critical controls.
+Document performance standards and testing requirements.
+Create, schedule and complete CCVs.
+If a CCV fails, raise an action, assign an owner, set evidence requirements and escalate if the risk is not controlled.
+Close the action only when evidence is accepted.
+Complete Control Effectiveness Tests and Material Risk Reviews.
+Update the risk profile, controls and CCVs.
+Repeat the assurance cycle. </pre> </div> </section>
+
+  <section class="section" id="roles" aria-labelledby="roles-title">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">Swimlane roles</p>
+        <h2 class="section-title" id="roles-title">Know who owns what.</h2>
+      </div>
+      <p class="section-intro">
+        Expand each role to see ownership, actions, evidence and common mistakes.
+      </p>
+    </div>
+
+    <div class="lane-list" id="role-lanes"></div>
+  </section>
+
+  <section class="section" id="translation" aria-labelledby="translation-title">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">Role translation</p>
+        <h2 class="section-title" id="translation-title">Translate mining language into manufacturing language.</h2>
+      </div>
+      <p class="section-intro">
+        Use this table when role names do not match the manufacturing structure.
+      </p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Mining role</th>
+            <th scope="col">Manufacturing equivalent</th>
+            <th scope="col">Plain English accountability</th>
+          </tr>
+        </thead>
+        <tbody id="translation-table"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" id="scenarios" aria-labelledby="scenarios-title">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">Learning scenarios</p>
+        <h2 class="section-title" id="scenarios-title">Test the decision points.</h2>
+      </div>
+      <p class="section-intro">
+        Open each scenario, choose an answer and review the explanation.
+      </p>
+    </div>
+
+    <div class="scenario-grid" id="scenario-grid"></div>
+  </section>
+
+  <section class="section" id="gaps" aria-labelledby="gaps-title">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">Gaps and simplification</p>
+        <h2 class="section-title" id="gaps-title">Make the system easier to use.</h2>
+      </div>
+      <p class="section-intro">
+        These points should be clarified before manufacturing teams rely on the process at scale.
+      </p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Gap or issue</th>
+            <th scope="col">Why it matters</th>
+            <th scope="col">Recommended fix</th>
+            <th scope="col">Priority</th>
+          </tr>
+        </thead>
+        <tbody id="gaps-table"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" id="summary" aria-labelledby="summary-title">
+    <div class="summary-card">
+      <h2 id="summary-title">Executive summary</h2>
+      <div>
+        <p>
+          The major hazard process helps the business identify fatality-potential risks, define the controls that matter most, verify those controls, fix failed controls and improve over time.
+        </p>
+        <p>
+          Manufacturing leaders need to own the risk, not just participate in the process.
+        </p>
+        <p>
+          Health and Safety can support the system, but line leaders must make sure controls are in place, people are competent, CCVs are completed, failed controls are actioned and overdue items are escalated.
+        </p>
+        <p>
+          The main implementation risk is complexity.
+        </p>
+        <p>
+          The process should be introduced using plain language, simple ownership, clear CCV rules, and a practical escalation model.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <strong>Major Hazard Control Flow</strong><br>
+        Static learning page for GitHub Pages.
+      </div>
+      <div>
+        Public release note: plain English summaries only. No controlled source extracts included.
+      </div>
+    </div>
+  </footer>
+
+<a href="#top" class="button-primary back-to-top" id="back-to-top" aria-label="Back to top">Back to top</a>
+
+  <script type="module">
+    const journeySteps = [
+      {
+        title: "Identify fatality-potential hazards",
+        what: "Teams identify hazards linked to the work, asset, process, energy source, material or operating condition.",
+        why: "This is where fatality-potential risk is first recognised.",
+        owner: "Responsible business leader until a formal Risk Owner is appointed.",
+        evidence: "Hazard identification record, risk assessment, workshop notes, asset or task information.",
+        next: "Check if the hazard could credibly result in fatality."
+      },
+      {
+        title: "Confirm major hazard",
+        what: "The team checks whether the Health and Safety Maximum Potential Consequence is Level 4 or higher.",
+        why: "This confirms whether the hazard is a major hazard.",
+        owner: "Responsible business leader, with risk and subject matter expert support.",
+        evidence: "Risk rating, consequence assessment, supporting rationale.",
+        next: "If MPC is below Level 4, manage through the normal risk process. If MPC is Level 4 or higher, treat as a major hazard."
+      },
+      {
+        title: "Record and define the material risk",
+        what: "The risk is recorded where it meets material risk requirements. The risk event, causes, consequences and ratings are defined.",
+        why: "A clear risk record prevents confusion and helps assign ownership.",
+        owner: "Risk Owner.",
+        evidence: "Risk register entry, risk description, causes, consequences, MPC, residual risk rating and target risk rating.",
+        next: "Identify controls."
+      },
+      {
+        title: "Identify critical controls",
+        what: "The team identifies controls that prevent or reduce the consequence of the risk. Critical controls are selected because they have a major influence on whether fatal harm is prevented.",
+        why: "The process focuses effort on the controls that matter most.",
+        owner: "Risk Owner, with subject matter experts and Control Owners.",
+        evidence: "Bowtie or control map, critical control decision, control list.",
+        next: "Assign Control Owners."
+      },
+      {
+        title: "Assign risk and control owners",
+        what: "One Risk Owner is assigned to each material risk. One Control Owner is assigned to each critical control.",
+        why: "Clear ownership prevents gaps.",
+        owner: "Responsible business leader and Risk Owner.",
+        evidence: "Risk Owner and Control Owner recorded in the system.",
+        next: "Create or confirm the performance standard."
+      },
+      {
+        title: "Set performance standards",
+        what: "Each critical control has design, operating and testing requirements.",
+        why: "A control cannot be verified properly unless the standard is clear.",
+        owner: "Control Owner.",
+        evidence: "Critical control performance standard.",
+        next: "Build Critical Control Verification questions."
+      },
+      {
+        title: "Complete Critical Control Verifications",
+        what: "A Critical Control Verification, also known as a CCV, checks if a critical control is working. The CCV must be based on the testing requirements in the performance standard.",
+        why: "It checks control health before a serious event occurs.",
+        owner: "Control Owner. A competent person with relevant expertise completes the verification.",
+        evidence: "Completed CCV, field evidence, system record, photo, maintenance record, training record or other required proof.",
+        next: "If passed, continue monitoring. If failed, raise action."
+      },
+      {
+        title: "Raise and close actions",
+        what: "A failed CCV, failed control test, missing evidence, incident or assurance finding triggers an action.",
+        why: "Failed controls must be fixed before exposure becomes normalised.",
+        owner: "Action Owner completes the action. Control Owner confirms the control gap is addressed. Risk Owner reviews high-risk or repeated issues.",
+        evidence: "Action record, due date, owner, risk priority, close-out evidence.",
+        next: "Use a simple close-out rule where not clearly defined. Action Owner completes. Control Owner accepts. Risk Owner reviews high-risk or repeated failures."
+      },
+      {
+        title: "Review control and risk effectiveness",
+        what: "Control Effectiveness Tests check whether critical controls are effective. Material Risk Reviews check whether the whole risk is being managed.",
+        why: "This turns individual checks into a broader assurance view.",
+        owner: "Control Owner owns the Control Effectiveness Test. Risk Owner owns the Material Risk Review.",
+        evidence: "CCV results, failed control trends, overdue actions, incident findings, audit results, review records.",
+        next: "Update controls, questions, training or the risk profile."
+      },
+      {
+        title: "Improve and repeat",
+        what: "The business updates the risk profile, controls, performance standards, CCVs and training.",
+        why: "The process must improve as the business changes.",
+        owner: "Risk Owner, Control Owner and business leader.",
+        evidence: "Updated bowtie, updated performance standard, updated CCV, closed actions, Management of Change record if required.",
+        next: "Repeat the assurance cycle."
+      }
+    ];
+
+    const processStages = [
+      {
+        icon: "⚠",
+        title: "Stage 1: Identify hazards",
+        fields: {
+          "What happens": "Teams identify hazards linked to the work, asset, process, energy source, material or operating condition.",
+          "Why it matters": "This is where fatality-potential risk is first recognised.",
+          "Who owns it": "Responsible business leader until a formal Risk Owner is appointed.",
+          "Evidence": "Hazard identification record, risk assessment, workshop notes, asset or task information.",
+          "Next step": "Check if the hazard could credibly result in fatality."
+        }
+      },
+      {
+        icon: "✓",
+        title: "Stage 2: Confirm major hazard",
+        fields: {
+          "What happens": "The team checks whether the Health and Safety Maximum Potential Consequence is Level 4 or higher.",
+          "Why it matters": "This confirms whether the hazard is a major hazard.",
+          "Who owns it": "Responsible business leader, with risk and subject matter expert support.",
+          "Evidence": "Risk rating, consequence assessment, supporting rationale.",
+          "Decision": "If MPC is below Level 4, manage through the normal risk process. If MPC is Level 4 or higher, treat as a major hazard."
+        }
+      },
+      {
+        icon: "▣",
+        title: "Stage 3: Record and define the material risk",
+        fields: {
+          "What happens": "The risk is recorded where it meets material risk requirements. The risk event, causes, consequences and ratings are defined.",
+          "Why it matters": "A clear risk record prevents confusion and helps assign ownership.",
+          "Who owns it": "Risk Owner.",
+          "Evidence": "Risk register entry, risk description, causes, consequences, MPC, residual risk rating and target risk rating.",
+          "Next step": "Identify controls."
+        }
+      },
+      {
+        icon: "◆",
+        title: "Stage 4: Identify critical controls",
+        fields: {
+          "What happens": "The team identifies controls that prevent or reduce the consequence of the risk. Critical controls are selected because they have a major influence on whether fatal harm is prevented.",
+          "Why it matters": "The process focuses effort on the controls that matter most.",
+          "Who owns it": "Risk Owner, with subject matter experts and Control Owners.",
+          "Evidence": "Bowtie or control map, critical control decision, control list.",
+          "Next step": "Assign Control Owners."
+        }
+      },
+      {
+        icon: "👤",
+        title: "Stage 5: Assign risk and control owners",
+        fields: {
+          "What happens": "One Risk Owner is assigned to each material risk. One Control Owner is assigned to each critical control.",
+          "Why it matters": "Clear ownership prevents gaps.",
+          "Who owns it": "Responsible business leader and Risk Owner.",
+          "Evidence": "Risk Owner and Control Owner recorded in the system.",
+          "Next step": "Create or confirm the performance standard."
+        }
+      },
+      {
+        icon: "📋",
+        title: "Stage 6: Set performance standards",
+        fields: {
+          "What happens": "Each critical control has design, operating and testing requirements.",
+          "Why it matters": "A control cannot be verified properly unless the standard is clear.",
+          "Who owns it": "Control Owner.",
+          "Evidence": "Critical control performance standard.",
+          "Next step": "Build Critical Control Verification questions."
+        }
+      },
+      {
+        icon: "🔎",
+        title: "Stage 7: Complete Critical Control Verifications",
+        fields: {
+          "What happens": "A Critical Control Verification, also known as a CCV, checks if a critical control is working. The CCV must be based on the testing requirements in the performance standard.",
+          "Why it matters": "It checks control health before a serious event occurs.",
+          "Who owns it": "Control Owner.",
+          "Who completes it": "A competent person with relevant expertise.",
+          "Evidence": "Completed CCV, field evidence, system record, photo, maintenance record, training record or other required proof.",
+          "Decision": "CCV passes if the control meets the performance standard. CCV fails if the control does not meet the standard or evidence is missing.",
+          "Next step": "If passed, continue monitoring. If failed, raise action."
+        }
+      },
+      {
+        icon: "↻",
+        title: "Stage 8: Raise and close actions",
+        fields: {
+          "What happens": "A failed CCV, failed control test, missing evidence, incident or assurance finding triggers an action.",
+          "Why it matters": "Failed controls must be fixed before exposure becomes normalised.",
+          "Who owns it": "Action Owner completes the action. Control Owner confirms the control gap is addressed. Risk Owner reviews high-risk or repeated issues.",
+          "Evidence": "Action record, due date, owner, risk priority, close-out evidence.",
+          "Gap": "The source documents do not clearly define one single close-out approval process for all CCV actions.",
+          "Recommended fix": "Use a simple close-out rule. Action Owner completes. Control Owner accepts. Risk Owner reviews high-risk or repeated failures."
+        }
+      },
+      {
+        icon: "▤",
+        title: "Stage 9: Review control and risk effectiveness",
+        fields: {
+          "What happens": "Control Effectiveness Tests check whether critical controls are effective. Material Risk Reviews check whether the whole risk is being managed.",
+          "Why it matters": "This turns individual checks into a broader assurance view.",
+          "Who owns it": "Control Owner owns the Control Effectiveness Test. Risk Owner owns the Material Risk Review.",
+          "Evidence": "CCV results, failed control trends, overdue actions, incident findings, audit results, review records.",
+          "Next step": "Update controls, questions, training or the risk profile."
+        }
+      },
+      {
+        icon: "∞",
+        title: "Stage 10: Improve and repeat",
+        fields: {
+          "What happens": "The business updates the risk profile, controls, performance standards, CCVs and training.",
+          "Why it matters": "The process must improve as the business changes.",
+          "Who owns it": "Risk Owner, Control Owner and business leader.",
+          "Evidence": "Updated bowtie, updated performance standard, updated CCV, closed actions, Management of Change record if required.",
+          "Next step": "Repeat the assurance cycle."
+        }
+      }
+    ];
+
+    const roles = [
+      {
+        role: "Business leader",
+        owns: "The business area and the conditions needed for the process to work.",
+        does: "Sets expectations, appoints accountable people and escalates unresolved control gaps.",
+        evidence: "Role appointments, review outcomes, action status and escalation records.",
+        avoid: "Treating Health and Safety as the owner of operational risk."
+      },
+      {
+        role: "Risk Owner",
+        owns: "The material risk and the overall risk review.",
+        does: "Defines the risk, checks control coverage, reviews repeated failures and makes risk decisions.",
+        evidence: "Risk record, review record, control list, CCV trends and action status.",
+        avoid: "Owning the risk on paper but not reviewing failed controls."
+      },
+      {
+        role: "Control Owner",
+        owns: "The critical control and its performance standard.",
+        does: "Confirms the control standard, checks CCV quality and accepts closure of control gaps.",
+        evidence: "Performance standard, CCV results, test evidence and accepted close-out evidence.",
+        avoid: "Allowing CCVs to pass without evidence."
+      },
+      {
+        role: "CCV verifier",
+        owns: "The quality of the verification they complete.",
+        does: "Checks the control against the standard and records evidence.",
+        evidence: "Completed CCV, field evidence and any failed-control notes.",
+        avoid: "Ticking yes when the evidence is missing or the control is bypassed."
+      },
+      {
+        role: "Action Owner",
+        owns: "The assigned corrective action.",
+        does: "Completes the action by the due date and uploads close-out evidence.",
+        evidence: "Action record, completion evidence and any interim control proof.",
+        avoid: "Closing an action without proof that the control gap is fixed."
+      },
+      {
+        role: "Health and Safety or Risk support",
+        owns: "Process support, coaching and system guidance.",
+        does: "Helps teams apply the process, improve questions and understand assurance results.",
+        evidence: "Coaching records, review support, reporting and system quality checks.",
+        avoid: "Replacing line ownership."
+      },
+      {
+        role: "Assurance",
+        owns: "Independent review of process health and control assurance.",
+        does: "Reviews effectiveness, identifies weak signals and reports systemic issues.",
+        evidence: "Assurance reports, findings, trend analysis and improvement actions.",
+        avoid: "Checking paperwork only and missing control failure trends."
+      },
+      {
+        role: "Frontline workers",
+        owns: "Using controls and reporting failed or missing controls.",
+        does: "Stop, escalate and speak up when a critical control is not in place or not working.",
+        evidence: "Hazard reports, stop-work records, CCV input and field feedback.",
+        avoid: "Normalising failed controls because the job still gets done."
+      }
+    ];
+
+    const translations = [
+      ["Responsible Manager / Reporting Unit leader", "Business Unit General Manager, Site Manager, Manufacturing Director", "Owns the risk process for the business area"],
+      ["Risk Owner", "Plant Manager, Operations Manager, Process Owner", "Owns the material risk and makes sure it is reviewed"],
+      ["Control Owner", "Department Manager, Maintenance Manager, Engineering Manager, Process Safety Lead", "Owns the critical control and makes sure it works"],
+      ["Subject Matter Expert", "Process engineer, reliability engineer, electrical engineer, maintenance specialist", "Provides technical input"],
+      ["Site Senior Executive", "Site General Manager or senior site lead", "Senior site accountability where the role applies"],
+      ["Area Manager / Superintendent", "Department Manager / Production Manager", "Manages local compliance and operational control"],
+      ["Area Supervisor", "Team Leader / Shift Supervisor", "Controls the work area and escalates missing or failed controls"],
+      ["Health and Safety Manager", "H&S Manager / Operational Risk Manager", "Supports the process and assurance but does not replace line ownership"],
+      ["Change Owner", "Department Manager or System Owner", "Owns approved change"],
+      ["CCV verifier", "Competent supervisor, operator, maintainer, engineer or specialist", "Completes verification where they have relevant expertise"]
+    ];
+
+    const scenarios = [
+      {
+        title: "Scenario 1",
+        situation: "A manufacturing line introduces a new high-energy automated press.",
+        question: "What is the first step?",
+        correct: "Identify hazards and assess whether the Maximum Potential Consequence could be Level 4 or higher.",
+        explain: "The team must first understand whether the hazard has fatality potential.",
+        options: [
+          "Write a training plan before assessing the hazard.",
+          "Identify hazards and assess whether the Maximum Potential Consequence could be Level 4 or higher.",
+          "Wait until the press has been operating for one month."
+        ]
+      },
+      {
+        title: "Scenario 2",
+        situation: "A CCV finds that a guarding interlock is bypassed.",
+        question: "What happens next?",
+        correct: "Record the failed CCV, raise a remediation action, apply interim controls if needed and escalate if the risk is not controlled.",
+        explain: "A failed critical control cannot be treated as normal.",
+        options: [
+          "Record the failed CCV, raise a remediation action, apply interim controls if needed and escalate if the risk is not controlled.",
+          "Close the CCV because the line is still running.",
+          "Wait for the next audit to confirm the issue."
+        ]
+      },
+      {
+        title: "Scenario 3",
+        situation: "The same CCV fails twice in two months.",
+        question: "What should leaders do?",
+        correct: "Review the repeat failure trend, escalate to the Risk Owner and Control Owner, and consider whether the control, training, maintenance or work process needs to change.",
+        explain: "Repeat failures show the issue may be systemic.",
+        options: [
+          "Treat each failed CCV as a separate low-level issue.",
+          "Review the repeat failure trend, escalate to the Risk Owner and Control Owner, and consider whether the control, training, maintenance or work process needs to change.",
+          "Reduce the CCV frequency so the team has more time."
+        ]
+      }
+    ];
+
+    const gaps = [
+      ["CCV escalation is not fully defined", "Failed critical controls may not be escalated quickly or consistently.", "Define who is notified, when escalation happens and what interim controls are needed.", "High"],
+      ["Action close-out approval is not clearly defined for all CCV actions", "Actions may be closed without proof that the control gap is fixed.", "Use a simple close-out rule. Action Owner completes. Control Owner accepts. Risk Owner reviews high-risk or repeated failures.", "High"],
+      ["Overdue action management needs a clear trigger", "Overdue actions can become normal if no one escalates them.", "Set escalation triggers based on risk priority and days overdue.", "High"],
+      ["Mining-specific role names may confuse manufacturing teams", "Teams may not know who owns the work in their structure.", "Map mining roles to manufacturing roles before rollout.", "Medium"],
+      ["Group performance standards need a fit-for-purpose review before use in manufacturing", "A standard may not match manufacturing equipment, tasks or operating context.", "Review each standard with the Control Owner and subject matter experts before use.", "High"],
+      ["Repeat failed CCVs need a clear review trigger", "Repeated failures can show a systemic control weakness.", "Trigger Risk Owner and Control Owner review after repeat failure within a defined period.", "High"],
+      ["Task risk tools should not be confused with major hazard management", "Teams may think a JHA or task assessment replaces control verification.", "Explain where task risk tools fit and where critical control assurance is required.", "Medium"],
+      ["Continuous assurance needs to be defined for multiple fatality risks", "Assurance can become fragmented when there are many major hazards.", "Create a simple assurance calendar and dashboard for CCVs, tests, reviews and actions.", "Medium"]
+    ];
+
+    const stepper = document.getElementById("stepper");
+    const stepTitle = document.getElementById("step-detail-title");
+    const stepWhat = document.getElementById("step-what");
+    const stepWhy = document.getElementById("step-why");
+    const stepOwner = document.getElementById("step-owner");
+    const stepEvidence = document.getElementById("step-evidence");
+    const stepNext = document.getElementById("step-next");
+
+    function updateStep(index) {
+      const step = journeySteps[index];
+      stepTitle.textContent = step.title;
+      stepWhat.textContent = step.what;
+      stepWhy.textContent = step.why;
+      stepOwner.textContent = step.owner;
+      stepEvidence.textContent = step.evidence;
+      stepNext.textContent = step.next;
+
+      document.querySelectorAll(".step-card").forEach((button, i) => {
+        button.setAttribute("aria-expanded", String(i === index));
+      });
+    }
+
+    journeySteps.forEach((step, index) => {
+      const button = document.createElement("button");
+      button.className = "step-card";
+      button.type = "button";
+      button.setAttribute("aria-expanded", index === 0 ? "true" : "false");
+      button.setAttribute("aria-controls", "step-detail");
+      button.innerHTML = `
+        <span class="step-index">${index + 1}</span>
+        <span class="step-title">${step.title}</span>
+      `;
+      button.addEventListener("click", () => updateStep(index));
+      stepper.appendChild(button);
+    });
+
+    updateStep(0);
+
+    const processCardGrid = document.getElementById("process-card-grid");
+
+    function createInfoItems(fields) {
+      return Object.entries(fields).map(([label, value]) => `
+        <div class="info-item">
+          <h4>${label}</h4>
+          <p>${value}</p>
+        </div>
+      `).join("");
+    }
+
+    processStages.forEach((stage, index) => {
+      const card = document.createElement("details");
+      card.className = "card process-card";
+      card.dataset.search = `${stage.title} ${Object.entries(stage.fields).flat().join(" ")}`.toLowerCase();
+      card.innerHTML = `
+        <summary aria-label="Expand ${stage.title}">
+          <span class="card-title">
+            <span class="card-icon" aria-hidden="true">${stage.icon}</span>
+            <span>${stage.title}</span>
+          </span>
+        </summary>
+        <div class="card-body">
+          <div class="info-grid">
+            ${createInfoItems(stage.fields)}
+          </div>
+        </div>
+      `;
+      if (index === 0) card.open = true;
+      processCardGrid.appendChild(card);
+    });
+
+    const cardSearch = document.getElementById("card-search");
+    const noResults = document.getElementById("no-results");
+
+    cardSearch.addEventListener("input", () => {
+      const term = cardSearch.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      document.querySelectorAll(".process-card").forEach((card) => {
+        const match = !term || card.dataset.search.includes(term);
+        card.classList.toggle("hidden", !match);
+        if (match) visibleCount += 1;
+      });
+
+      noResults.classList.toggle("show", visibleCount === 0);
+    });
+
+    document.getElementById("expand-all").addEventListener("click", () => {
+      document.querySelectorAll(".process-card:not(.hidden)").forEach((card) => {
+        card.open = true;
+      });
+    });
+
+    document.getElementById("collapse-all").addEventListener("click", () => {
+      document.querySelectorAll(".process-card").forEach((card) => {
+        card.open = false;
+      });
+    });
+
+    const roleLanes = document.getElementById("role-lanes");
+
+    roles.forEach((item, index) => {
+      const details = document.createElement("details");
+      details.className = "role-lane";
+      if (index === 0) details.open = true;
+      details.innerHTML = `
+        <summary aria-label="Expand role ${item.role}">
+          <span class="role-name">
+            <span class="card-icon" aria-hidden="true">●</span>
+            <span>${item.role}</span>
+          </span>
+        </summary>
+        <div class="lane-grid">
+          <div class="lane-cell">
+            <h4>What they own</h4>
+            <p>${item.owns}</p>
+          </div>
+          <div class="lane-cell">
+            <h4>What they do</h4>
+            <p>${item.does}</p>
+          </div>
+          <div class="lane-cell">
+            <h4>Evidence they need</h4>
+            <p>${item.evidence}</p>
+          </div>
+          <div class="lane-cell">
+            <h4>Common mistakes to avoid</h4>
+            <p>${item.avoid}</p>
+          </div>
+        </div>
+      `;
+      roleLanes.appendChild(details);
+    });
+
+    const translationTable = document.getElementById("translation-table");
+
+    translations.forEach((row) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row[0]}</td>
+        <td>${row[1]}</td>
+        <td>${row[2]}</td>
+      `;
+      translationTable.appendChild(tr);
+    });
+
+    const scenarioGrid = document.getElementById("scenario-grid");
+
+    scenarios.forEach((scenario, scenarioIndex) => {
+      const details = document.createElement("details");
+      details.className = "scenario-card";
+      if (scenarioIndex === 0) details.open = true;
+
+      const options = scenario.options.map((option) => `
+        <button class="answer-option" type="button" data-correct="${option === scenario.correct}">
+          ${option}
+        </button>
+      `).join("");
+
+      details.innerHTML = `
+        <summary aria-label="Expand ${scenario.title}">
+          <span>
+            <span class="scenario-title">${scenario.title}</span><br>
+            <span>${scenario.situation}</span>
+          </span>
+        </summary>
+        <div class="scenario-body">
+          <p class="question">${scenario.question}</p>
+          <div class="answer-options">
+            ${options}
+          </div>
+          <div class="answer-feedback" role="status" aria-live="polite"></div>
+        </div>
+      `;
+
+      details.querySelectorAll(".answer-option").forEach((button) => {
+        button.addEventListener("click", () => {
+          const feedback = details.querySelector(".answer-feedback");
+          const isCorrect = button.dataset.correct === "true";
+
+          feedback.classList.add("show");
+          feedback.classList.toggle("incorrect", !isCorrect);
+          feedback.innerHTML = isCorrect
+            ? `<strong>Correct.</strong> ${scenario.explain}`
+            : `<strong>Not quite.</strong> Correct answer: ${scenario.correct}<br>${scenario.explain}`;
+        });
+      });
+
+      scenarioGrid.appendChild(details);
+    });
+
+    const gapsTable = document.getElementById("gaps-table");
+
+    gaps.forEach((row) => {
+      const priorityClass = row[3].toLowerCase();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row[0]}</td>
+        <td>${row[1]}</td>
+        <td>${row[2]}</td>
+        <td><span class="priority ${priorityClass}">${row[3]}</span></td>
+      `;
+      gapsTable.appendChild(tr);
+    });
+
+    const navToggle = document.querySelector(".nav-toggle");
+    const siteNav = document.querySelector(".site-nav");
+
+    navToggle.addEventListener("click", () => {
+      const isOpen = siteNav.classList.toggle("open");
+      navToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    siteNav.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        siteNav.classList.remove("open");
+        navToggle.setAttribute("aria-expanded", "false");
+      });
+    });
+
+    const backToTop = document.getElementById("back-to-top");
+
+    window.addEventListener("scroll", () => {
+      backToTop.classList.toggle("show", window.scrollY > 520);
+    }, { passive: true });
+
+    const fallback = document.getElementById("flow-fallback");
+
+    function showFlowFallback() {
+      fallback.classList.remove("hidden");
+    }
+
+    fallback.classList.add("hidden");
+
+    const mermaidScript = document.createElement("script");
+    mermaidScript.src = "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js";
+    mermaidScript.async = true;
+    mermaidScript.onload = () => {
+      try {
+        window.mermaid.initialize({
+          startOnLoad: true,
+          securityLevel: "strict",
+          theme: "base",
+          themeVariables: {
+            fontFamily: "Arial, Helvetica, sans-serif",
+            primaryColor: "#FFFFFF",
+            primaryTextColor: "#001D44",
+            primaryBorderColor: "#001D44",
+            lineColor: "#001D44",
+            secondaryColor: "#E7E6E6",
+            tertiaryColor: "#FFFFFF"
+          }
+        });
+      } catch (error) {
+        showFlowFallback();
+      }
+    };
+    mermaidScript.onerror = showFlowFallback;
+    document.body.appendChild(mermaidScript);
+  </script>
+
+</body>
+</html>
